@@ -1,574 +1,376 @@
 <!doctype html>
 <html lang="id" class="h-full">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Number Grid 100</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="/_sdk/element_sdk.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
-  <style>
-    html, body { height: 100%; margin: 0; }
-    * { font-family: 'Outfit', sans-serif; }
-
-    .color-dots-toolbar {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 16px;
-      padding: 12px;
-      background: rgba(15, 52, 96, 0.4);
-      border-radius: 12px;
-      backdrop-filter: blur(10px);
-      flex-wrap: wrap;
-      border: 2px solid rgba(100, 200, 255, 0.3);
-      box-shadow: 0 8px 32px rgba(100, 200, 255, 0.1);
-    }
-
-    .dot-button {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: 3px solid transparent;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      flex-shrink: 0;
-    }
-
-    .dot-button:hover {
-      transform: scale(1.15);
-      box-shadow: 0 0 12px currentColor;
-    }
-
-    .dot-button.active {
-      border-color: #ffffff;
-      box-shadow: 0 0 16px currentColor;
-      transform: scale(1.2);
-    }
-
-    .reset-button {
-      padding: 8px 16px;
-      background: rgba(100, 200, 255, 0.3);
-      color: #64c8ff;
-      border: 2px solid rgba(100, 200, 255, 0.5);
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 14px;
-      transition: all 0.2s ease;
-      margin-left: 12px;
-      border-left: 2px solid rgba(255, 255, 255, 0.3);
-      padding-left: 16px;
-    }
-
-    .reset-button:hover {
-      background: rgba(100, 200, 255, 0.5);
-      box-shadow: 0 0 12px rgba(100, 200, 255, 0.4);
-      transform: scale(1.05);
-    }
-
-    .reset-button:active {
-      transform: scale(0.95);
-    }
-
-    .number-box {
-      aspect-ratio: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
-      border: 2px solid rgba(100, 200, 255, 0.2);
-      flex-wrap: wrap;
-      gap: 4px;
-      padding: 4px;
-      background-color: #1e2a4a;
-      color: #64c8ff;
-    }
-
-    .box-mini-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .box-number {
-      flex-basis: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .number-box:hover {
-      transform: scale(1.12) rotate(-2deg);
-      z-index: 10;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-    }
-
-    .number-box:active {
-      transform: scale(0.95);
-    }
-
-    .number-box.clicked {
-      animation: pop 0.4s ease;
-    }
-
-    @keyframes pop {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.25) rotate(5deg); }
-      100% { transform: scale(1); }
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(16px) scale(0.9); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    .grid-wrapper {
-      display: grid;
-      grid-template-columns: repeat(10, 1fr);
-      gap: 8px;
-      max-width: 720px;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    @media (max-width: 640px) {
-      .grid-wrapper {
-        grid-template-columns: repeat(5, 1fr);
-        gap: 6px;
-      }
-    }
-
-    .app-bg {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #16213e 75%, #1a1a2e 100%);
-    }
-
-    .title-glow {
-      text-shadow: 0 0 30px rgba(100, 200, 255, 0.4), 0 0 15px rgba(150, 220, 255, 0.3);
-      color: #64c8ff;
-    }
-
-    .rules-buttons-container {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .rules-button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    .fpb-button {
-      background: linear-gradient(135deg, #3b82f6, #2563eb);
-      color: #ffffff;
-    }
-
-    .fpb-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
-    }
-
-    .kpk-button {
-      background: linear-gradient(135deg, #ec4899, #db2777);
-      color: #ffffff;
-    }
-
-    .kpk-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(236, 72, 153, 0.4);
-    }
-
-    .rules-button:active {
-      transform: translateY(0);
-    }
-
-    /* Modal styles */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      backdrop-filter: blur(4px);
-    }
-
-    .modal-overlay.active {
-      display: flex;
-      animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    .modal-content {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-      border-radius: 16px;
-      padding: 24px;
-      max-width: 500px;
-      width: 90%;
-      max-height: 80vh;
-      overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-      border: 2px solid rgba(100, 200, 255, 0.3);
-      animation: slideUp 0.3s ease;
-    }
-
-    @keyframes slideUp {
-      from { transform: translateY(40px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 2px solid rgba(100, 200, 255, 0.2);
-    }
-
-    .modal-title {
-      font-size: 24px;
-      font-weight: 700;
-      color: #64c8ff;
-    }
-
-    .modal-close {
-      background: none;
-      border: none;
-      color: #64c8ff;
-      font-size: 28px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      padding: 0;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-close:hover {
-      transform: rotate(90deg);
-      color: #ff1744;
-    }
-
-    .modal-body {
-      color: #bfdbfe;
-      line-height: 1.6;
-      font-size: 14px;
-    }
-
-    .modal-image-placeholder {
-      width: 100%;
-      height: 300px;
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(100, 200, 255, 0.2));
-      border: 2px dashed rgba(100, 200, 255, 0.4);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 16px 0;
-      font-size: 48px;
-      color: rgba(100, 200, 255, 0.3);
-      text-align: center;
-    }
-  </style>
-  <style>body { box-sizing: border-box; }</style>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js" type="text/javascript"></script>
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
- </head>
- <body class="h-full">
-  <div class="app-bg h-full w-full overflow-auto">
-   <div class="w-full max-w-4xl mx-auto px-4 py-8">
-    <header class="text-center mb-8">
-     <h1 id="gridTitle" class="text-3xl md:text-4xl font-extrabold text-white title-glow tracking-tight">Dakon Digital FPB &amp; KPK</h1>
-     <p id="subtitle" class="text-blue-300 mt-2 text-sm">MATHNOLOGY</p>
-    </header>
-    <div id="colorToolbar" class="color-dots-toolbar"><button class="dot-button active" data-color="#ff1744" style="background-color: #ff1744;" title="Bright Red"></button> <button class="dot-button" data-color="#00e676" style="background-color: #00e676;" title="Bright Green"></button> <button class="dot-button" data-color="#00bfff" style="background-color: #00bfff;" title="Bright Blue"></button> <button class="dot-button" data-color="#ffc400" style="background-color: #ffc400;" title="Bright Yellow"></button> <button class="dot-button" data-color="#d500f9" style="background-color: #d500f9;" title="Bright Purple"></button> <button id="resetButton" class="reset-button">Reset Semua</button>
-    </div>
-    <div class="rules-buttons-container"><button id="fpbRulesBtn" class="rules-button fpb-button">📋 Aturan FPB</button> <button id="kpkRulesBtn" class="rules-button kpk-button">📋 Aturan KPK</button>
-    </div>
-    <div id="numberGrid" class="grid-wrapper"></div>
-    <footer class="text-center mt-8 pb-4">
-     <p class="text-blue-400 text-xs">© 2026 All Rights Reserved</p>
-    </footer>
-   </div>
-  </div><!-- FPB Rules Modal -->
-  <div id="fpbModal" class="modal-overlay">
-   <div class="modal-content">
-    <div class="modal-header">
-     <h2 class="modal-title">📋 Aturan FPB</h2><button class="modal-close" onclick="closeFpbModal()">×</button>
-    </div>
-    <div class="modal-body">
-     <p><strong>FPB (Faktor Persekutuan Terbesar)</strong> adalah bilangan terbesar yang dapat membagi dua atau lebih bilangan tanpa sisa.</p>
-     <div class="modal-image-placeholder">
-      🖼️ Gambar Aturan FPB<br><span style="font-size: 14px;">Belum disiapkan</span>
-     </div>
-     <h3 style="color: #93c5fd; margin-top: 16px; font-weight: 600;">Cara Mencari FPB:</h3>
-     <ul style="margin-left: 16px; margin-top: 8px;">
-      <li>1. Cari semua faktor dari setiap bilangan</li>
-      <li>2. Temukan faktor yang sama</li>
-      <li>3. Pilih faktor terbesar</li>
-     </ul>
-     <p style="margin-top: 12px;"><strong>Contoh:</strong> FPB dari 12 dan 18</p>
-     <p style="margin-left: 16px; color: #d1d5db;">Faktor 12: 1, 2, 3, 4, 6, 12<br>
-      Faktor 18: 1, 2, 3, 6, 9, 18<br>
-      FPB = 6</p>
-    </div>
-   </div>
-  </div><!-- KPK Rules Modal -->
-  <div id="kpkModal" class="modal-overlay">
-   <div class="modal-content">
-    <div class="modal-header">
-     <h2 class="modal-title">📋 Aturan KPK</h2><button class="modal-close" onclick="closeKpkModal()">×</button>
-    </div>
-    <div class="modal-body">
-     <p><strong>KPK (Kelipatan Persekutuan Terkecil)</strong> adalah bilangan terkecil yang merupakan kelipatan dari dua atau lebih bilangan.</p>
-     <div class="modal-image-placeholder">
-      🖼️ Gambar Aturan KPK<br><span style="font-size: 14px;">Belum disiapkan</span>
-     </div>
-     <h3 style="color: #ec4899; margin-top: 16px; font-weight: 600;">Cara Mencari KPK:</h3>
-     <ul style="margin-left: 16px; margin-top: 8px;">
-      <li>1. Cari kelipatan dari setiap bilangan</li>
-      <li>2. Temukan kelipatan yang sama</li>
-      <li>3. Pilih kelipatan terkecil</li>
-     </ul>
-     <p style="margin-top: 12px;"><strong>Contoh:</strong> KPK dari 4 dan 6</p>
-     <p style="margin-left: 16px; color: #d1d5db;">Kelipatan 4: 4, 8, 12, 16, 20, 24, ...<br>
-      Kelipatan 6: 6, 12, 18, 24, 30, ...<br>
-      KPK = 12</p>
-    </div>
-   </div>
-  </div>
-  <script>
-    const dotColors = ['#ff1744', '#00e676', '#00bfff', '#ffc400', '#d500f9'];
-    let selectedColor = dotColors[0]; // Start with bright red
-
-    // Color palette for the boxes
-    const palette = [
-      ['#ef4444','#ffffff'], ['#f97316','#ffffff'], ['#eab308','#1a1a1a'],
-      ['#22c55e','#ffffff'], ['#06b6d4','#ffffff'], ['#3b82f6','#ffffff'],
-      ['#8b5cf6','#ffffff'], ['#ec4899','#ffffff'], ['#f43f5e','#ffffff'],
-      ['#14b8a6','#ffffff']
-    ];
-
-    function getColor(n) {
-      // All boxes have the same neutral color
-      return ['#1e293b', '#e2e8f0'];
-    }
-
-    function buildGrid() {
-      const grid = document.getElementById('numberGrid');
-      grid.innerHTML = '';
-      
-      for (let i = 1; i <= 100; i++) {
-        const [bg, fg] = getColor(i);
-        const box = document.createElement('div');
-        box.className = 'number-box';
-        box.style.backgroundColor = bg;
-        box.style.color = fg;
-        box.style.fontSize = 'clamp(0.75rem, 2.5vw, 1.25rem)';
-        box.style.animationDelay = `${(i - 1) * 15}ms`;
-        box.style.animation = `fadeInUp 0.4s ease ${(i - 1) * 15}ms both`;
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dakon Digital FPB & KPK - Mathnology</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        html, body { height: 100%; margin: 0; font-family: 'Outfit', sans-serif; background-color: #0f172a; color: #f1f5f9; }
+        .app-bg { background: radial-gradient(circle at top right, #1e293b, #0f172a); min-height: 100vh; }
         
-        // Data structure to store dots in this box
-        box.dataset.dots = JSON.stringify([]);
-        box.dataset.boxNumber = i;
-        
-        const numberText = document.createElement('span');
-        numberText.className = 'box-number';
-        numberText.textContent = i;
-        box.appendChild(numberText);
-        
-        box.setAttribute('role', 'button');
-        box.setAttribute('aria-label', `Angka ${i}`);
-        box.tabIndex = 0;
-
-        box.addEventListener('click', () => {
-          const dots = JSON.parse(box.dataset.dots);
-          
-          // Add dot if less than 5, or remove if already exists
-          if (dots.includes(selectedColor)) {
-            // Remove this color
-            box.dataset.dots = JSON.stringify(dots.filter(d => d !== selectedColor));
-          } else if (dots.length < 5) {
-            // Add this color
-            dots.push(selectedColor);
-            box.dataset.dots = JSON.stringify(dots);
-          }
-          
-          updateBoxDisplay(box);
-        });
-
-        box.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            box.click();
-          }
-        });
-
-        grid.appendChild(box);
-      }
-    }
-
-    function updateBoxDisplay(box) {
-      const dots = JSON.parse(box.dataset.dots);
-      
-      // Remove old dots
-      const oldDots = box.querySelectorAll('.box-mini-dot');
-      oldDots.forEach(dot => dot.remove());
-      
-      // Add new dots
-      dots.forEach((color, idx) => {
-        const dot = document.createElement('div');
-        dot.className = 'box-mini-dot';
-        dot.style.backgroundColor = color;
-        
-        // Insert before the number if first dot, otherwise just add
-        if (idx === 0) {
-          const numberSpan = box.querySelector('.box-number');
-          box.insertBefore(dot, numberSpan);
-        } else {
-          box.insertBefore(dot, box.querySelector('.box-number'));
+        /* Grid System */
+        .grid-wrapper {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 10px;
+            max-width: 850px;
+            margin: 0 auto;
         }
-      });
-    }
+        @media (max-width: 640px) { .grid-wrapper { grid-template-columns: repeat(5, 1fr); gap: 6px; } }
 
-    // Setup toolbar button listeners
-    const toolbar = document.getElementById('colorToolbar');
-    toolbar.querySelectorAll('.dot-button').forEach(button => {
-      button.addEventListener('click', () => {
-        // Remove active class from all buttons
-        toolbar.querySelectorAll('.dot-button').forEach(b => b.classList.remove('active'));
-        // Add to clicked button
-        button.classList.add('active');
-        selectedColor = button.dataset.color;
-      });
-    });
+        /* Number Box */
+        .number-box {
+            aspect-ratio: 1;
+            background: #1e293b;
+            border: 1px solid rgba(100, 200, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .number-box:hover { transform: scale(1.05); background: #2d3a4f; border-color: var(--active-border, #3b82f6); }
+        
+        /* Box Number - Kalem */
+        .box-number { 
+            font-size: 1.1rem; 
+            font-weight: 700; 
+            color: #64748b; 
+            transition: all 0.3s; 
+        }
 
-    // Reset button listener
-    document.getElementById('resetButton').addEventListener('click', () => {
-      document.querySelectorAll('.number-box').forEach(box => {
-        box.dataset.dots = JSON.stringify([]);
-        updateBoxDisplay(box);
-      });
-    });
+        /* Highlight untuk KPK / FPB (Kotak yang punya >= 2 titik) */
+        .match-highlight {
+            border-color: #facc15 !important;
+            box-shadow: 0 0 20px rgba(250, 204, 21, 0.6), inset 0 0 10px rgba(250, 204, 21, 0.2);
+            background-color: rgba(250, 204, 21, 0.15) !important;
+            animation: pulse-glow 1.5s infinite;
+            z-index: 10;
+            position: relative;
+            transform: scale(1.05);
+        }
+        .match-highlight .box-number {
+            color: #facc15;
+            font-size: 1.5rem;
+            transform: scale(1.1);
+            text-shadow: 0 0 10px rgba(250, 204, 21, 0.8);
+        }
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 15px rgba(250, 204, 21, 0.4), inset 0 0 10px rgba(250, 204, 21, 0.2); }
+            50% { box-shadow: 0 0 25px rgba(250, 204, 21, 0.8), inset 0 0 15px rgba(250, 204, 21, 0.4); }
+            100% { box-shadow: 0 0 15px rgba(250, 204, 21, 0.4), inset 0 0 10px rgba(250, 204, 21, 0.2); }
+        }
 
-    // FPB and KPK modal functions
-    function openFpbModal() {
-      document.getElementById('fpbModal').classList.add('active');
-    }
+        /* Dots */
+        .dots-container { display: flex; gap: 3px; flex-wrap: wrap; justify-content: center; min-height: 10px; margin-bottom: 4px; }
+        .mini-dot { width: 8px; height: 8px; border-radius: 50%; animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
 
-    function closeFpbModal() {
-      document.getElementById('fpbModal').classList.remove('active');
-    }
+        /* Toolbar Components */
+        .tool-card { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
+        .dot-button { width: 34px; height: 34px; border-radius: 50%; transition: 0.2s; border: 3px solid transparent; }
+        .dot-button.active { border-color: white; transform: scale(1.2); box-shadow: 0 0 15px currentColor; }
 
-    function openKpkModal() {
-      document.getElementById('kpkModal').classList.add('active');
-    }
+        /* Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #334155; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #3b82f6; }
+        input:checked + .slider:before { transform: translateX(24px); }
 
-    function closeKpkModal() {
-      document.getElementById('kpkModal').classList.remove('active');
-    }
+        .disabled-op { opacity: 0.4; pointer-events: none; }
+        
+        /* Custom Scrollbar */
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+    </style>
+</head>
+<body class="app-bg relative flex flex-col min-h-screen">
 
-    // Button event listeners
-    document.getElementById('fpbRulesBtn').addEventListener('click', openFpbModal);
-    document.getElementById('kpkRulesBtn').addEventListener('click', openKpkModal);
+    <div class="max-w-5xl mx-auto px-4 py-8 relative flex-grow w-full">
+        <header class="text-center mb-8 relative">
+            <h1 class="text-3xl md:text-5xl font-black tracking-tighter">
+                <span class="text-white">DAKON</span> 
+                <span class="text-emerald-400">DIGITAL</span> 
+                <span class="text-blue-500">FPB & KPK</span>
+            </h1>
+            <p class="text-slate-400 text-lg font-bold tracking-widest mt-2 uppercase">
+                By <span class="text-blue-400">MATHNOLOGY</span>
+            </p>
+            
+            <div class="flex flex-col md:flex-row justify-center items-center gap-4 mt-5">
+                <div id="modeStatus" class="inline-block px-4 py-1.5 rounded-full bg-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest border border-blue-500/30">
+                    Mode: Manual
+                </div>
+                <button id="btnAturan" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-5 py-1.5 rounded-full text-sm font-bold shadow-lg transition-all border border-purple-400/50 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                    Petunjuk Penggunaan
+                </button>
+            </div>
+        </header>
 
-    // Close modal when clicking outside
-    document.getElementById('fpbModal').addEventListener('click', (e) => {
-      if (e.target.id === 'fpbModal') closeFpbModal();
-    });
+        <div class="tool-card rounded-3xl p-6 mb-8 shadow-2xl overflow-hidden">
+            <div class="flex flex-col xl:flex-row items-center justify-between gap-6">
+                
+                <div class="flex flex-wrap items-center justify-center gap-6">
+                    <div class="flex items-center gap-2 border-r border-slate-700 pr-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" class="text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                        <select id="gridRange" class="bg-slate-800 border border-slate-600 rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer transition-all hover:bg-slate-700">
+                            <option value="50">Papan 1 - 50</option>
+                            <option value="100" selected>Papan 1 - 100</option>
+                            <option value="200">Papan 1 - 200</option>
+                        </select>
+                    </div>
 
-    document.getElementById('kpkModal').addEventListener('click', (e) => {
-      if (e.target.id === 'kpkModal') closeKpkModal();
-    });
+                    <div class="flex items-center gap-3 border-r border-slate-700 pr-6">
+                        <span class="text-sm font-bold text-slate-400 uppercase">Manual</span>
+                        <label class="switch">
+                            <input type="checkbox" id="modeToggle">
+                            <span class="slider"></span>
+                        </label>
+                        <span class="text-sm font-bold text-slate-400 uppercase">Auto</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-3">
+                        <button class="dot-button active" data-color="#ef4444" style="background-color: #ef4444;"></button>
+                        <button class="dot-button" data-color="#22c55e" style="background-color: #22c55e;"></button>
+                        <button class="dot-button" data-color="#3b82f6" style="background-color: #3b82f6;"></button>
+                        <button class="dot-button" data-color="#eab308" style="background-color: #eab308;"></button>
+                        <button class="dot-button" data-color="#a855f7" style="background-color: #a855f7;"></button>
+                    </div>
+                </div>
 
-    buildGrid();
+                <div class="flex flex-wrap items-center justify-center gap-4">
+                    <div id="autoControls" class="flex items-center gap-3 disabled-op">
+                        <div class="relative">
+                            <input type="number" id="targetNum" placeholder="Angka" class="w-24 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white font-bold focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <button id="btnK" class="bg-blue-600 hover:bg-blue-500 px-5 py-2.5 rounded-xl font-bold text-sm transition-all active:scale-95 shadow-lg">Kelipatan</button>
+                        <button id="btnF" class="bg-indigo-600 hover:bg-indigo-500 px-5 py-2.5 rounded-xl font-bold text-sm transition-all active:scale-95 shadow-lg">Faktor</button>
+                    </div>
 
-    // Element SDK
-    const defaultConfig = {
-      grid_title: 'Dakon Digital FPB & KPK',
-      background_color: '#1a1a2e',
-      surface_color: '#1e2a4a',
-      text_color: '#64c8ff',
-      primary_action: '#ff1744',
-      secondary_action: '#00e676',
-      font_family: 'Outfit',
-      font_size: 16
-    };
+                    <button id="resetBtn" title="Bersihkan Papan" class="bg-slate-800 hover:bg-red-500/20 hover:text-red-400 border border-slate-700 hover:border-red-500/50 p-2.5 rounded-xl transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
 
-    function applyConfig(config) {
-      const title = document.getElementById('gridTitle');
-      const subtitle = document.getElementById('subtitle');
-      const bg = document.querySelector('.app-bg');
+        <div id="numberGrid" class="grid-wrapper pb-10"></div>
+    </div>
 
-      const font = (config.font_family || defaultConfig.font_family) + ', sans-serif';
-      const baseSize = config.font_size || defaultConfig.font_size;
+    <footer class="text-center text-slate-500 text-sm font-medium pb-6 pt-4">
+        &copy; 2026 MATHNOLOGY
+    </footer>
 
-      title.textContent = config.grid_title || defaultConfig.grid_title;
-      title.style.fontFamily = font;
-      title.style.fontSize = `${baseSize * 2}px`;
-      title.style.color = config.text_color || defaultConfig.text_color;
+    <div id="aturanModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 hidden opacity-0 transition-opacity duration-300 backdrop-blur-md p-4">
+        <div class="bg-slate-900 border-2 border-slate-700 rounded-3xl p-6 max-w-2xl w-full shadow-2xl relative text-slate-200 max-h-[90vh] overflow-y-auto custom-scroll">
+            <button id="closeModal" class="absolute top-5 right-5 text-slate-400 hover:text-white bg-slate-800 hover:bg-red-500/80 rounded-full p-2 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+            
+            <h2 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 mb-6 text-center border-b border-slate-800 pb-4">
+                📖 Petunjuk Penggunaan
+            </h2>
+            
+            <div class="space-y-6">
+                <div class="bg-slate-800/60 rounded-2xl p-5 border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+                    <h3 class="text-xl font-bold text-cyan-400 mb-2 flex items-center gap-2">
+                        <span class="bg-cyan-900/50 p-2 rounded-lg">A</span> Mencari Kelipatan Persekutuan Terkecil (KPK)
+                    </h3>
+                    <p class="text-sm text-slate-300 mb-4 bg-slate-900 p-2 rounded-lg inline-block">Contoh: Mencari KPK dari angka <strong>3</strong> dan <strong>4</strong>.</p>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex gap-3 items-start"><span class="flex-shrink-0 w-6 h-6 rounded-full bg-slate-700 text-blue-400 flex items-center justify-center font-bold border border-blue-500/50">1</span><span>Pastikan aplikasi berada pada mode <strong class="text-green-400 bg-green-400/10 px-2 py-0.5 rounded">Auto</strong>.</span></li>
+                        <li class="flex gap-3 items-start"><span class="flex-shrink-0 w-6 h-6 rounded-full bg-slate-700 text-blue-400 flex items-center justify-center font-bold border border-blue-500/50">2</span><span>Pilih warna (misal: <strong class="text-red-400">Merah 🔴</strong>). Ketik angka <strong>3</strong>, lalu tekan <strong class="text-blue-300 bg-blue-600/30 px-2 py-0.5 rounded border border-blue-500/50">Kelipatan</strong>.</span></li>
+                        <li class="flex gap-3 items-start"><span class="flex-shrink-0 w-6 h-6 rounded-full bg-slate-700 text-blue-400 flex items-center justify-center font-bold border border-blue-500/50">3</span><span>Pilih warna (misal: <strong class="text-green-400">Hijau 🟢</strong>). Ketik angka <strong>4</strong>, lalu tekan <strong class="text-blue-300 bg-blue-600/30 px-2 py-0.5 rounded border border-blue-500/50">Kelipatan</strong>.</span></li>
+                    </ul>
+                    
+                    <div class="mt-5 p-4 bg-gradient-to-r from-blue-900/50 to-cyan-900/50 border-l-4 border-cyan-400 rounded-r-xl">
+                        <strong class="text-cyan-300 text-base">💡 Hasil & Cara Membaca:</strong>
+                        <ul class="list-disc list-inside mt-2 space-y-1 text-slate-200">
+                            <li>Kotak yang menyala Emas berarti kotak tersebut <strong>memuat kedua warna</strong> (Merah & Hijau). Ini disebut <em>Kelipatan Persekutuan</em>.</li>
+                            <li>Karena kita mencari yang <strong>Terkecil (KPK)</strong>, maka pilih kotak menyala Emas yang <strong class="text-cyan-400 text-lg">paling awal</strong>. (Jawaban: 12)</li>
+                        </ul>
+                    </div>
+                </div>
 
-      subtitle.style.fontFamily = font;
-      subtitle.style.fontSize = `${baseSize * 0.875}px`;
-      subtitle.style.color = config.secondary_action || defaultConfig.secondary_action;
+                <div class="bg-slate-800/60 rounded-2xl p-5 border border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.1)]">
+                    <h3 class="text-xl font-bold text-fuchsia-400 mb-2 flex items-center gap-2">
+                        <span class="bg-fuchsia-900/50 p-2 rounded-lg">B</span> Mencari Faktor Persekutuan Terbesar (FPB)
+                    </h3>
+                    <p class="text-sm text-slate-300 mb-4 bg-slate-900 p-2 rounded-lg inline-block">Contoh: Mencari FPB dari angka <strong>12</strong> dan <strong>18</strong>.</p>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex gap-3 items-start"><span class="flex-shrink-0 w-6 h-6 rounded-full bg-slate-700 text-purple-400 flex items-center justify-center font-bold border border-purple-500/50">1</span><span>Tekan tombol <strong class="text-red-400 bg-red-400/10 px-2 py-0.5 rounded">Reset</strong> untuk membersihkan papan.</span></li>
+                        <li class="flex gap-3 items-start"><span class="flex-shrink-0 w-6 h-6 rounded-full bg-slate-700 text-purple-400 flex items-center justify-center font-bold border border-purple-500/50">2</span><span>Pilih warna (misal: <strong class="text-blue-400">Biru 🔵</strong>). Ketik angka <strong>12</strong>, lalu tekan <strong class="text-purple-300 bg-purple-600/30 px-2 py-0.5 rounded border border-purple-500/50">Faktor</strong>.</span></li>
+                        <li class="flex gap-3 items-start"><span class="flex-shrink-0 w-6 h-6 rounded-full bg-slate-700 text-purple-400 flex items-center justify-center font-bold border border-purple-500/50">3</span><span>Pilih warna (misal: <strong class="text-yellow-400">Kuning 🟡</strong>). Ketik angka <strong>18</strong>, lalu tekan <strong class="text-purple-300 bg-purple-600/30 px-2 py-0.5 rounded border border-purple-500/50">Faktor</strong>.</span></li>
+                    </ul>
+                    
+                    <div class="mt-5 p-4 bg-gradient-to-r from-purple-900/50 to-fuchsia-900/50 border-l-4 border-fuchsia-400 rounded-r-xl">
+                        <strong class="text-fuchsia-300 text-base">💡 Hasil & Cara Membaca:</strong>
+                        <ul class="list-disc list-inside mt-2 space-y-1 text-slate-200">
+                            <li>Kotak yang menyala Emas berarti kotak tersebut <strong>memuat kedua warna</strong> (Biru & Kuning). Ini disebut <em>Faktor Persekutuan</em>.</li>
+                            <li>Karena kita mencari yang <strong>Terbesar (FPB)</strong>, maka pilih kotak menyala Emas yang <strong class="text-fuchsia-400 text-lg">paling akhir</strong>. (Jawaban: 6)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="btnPaham" class="w-full mt-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-blue-500/20 text-lg">
+                Mengerti
+            </button>
+        </div>
+    </div>
 
-      bg.style.background = `linear-gradient(145deg, ${config.background_color || defaultConfig.background_color} 0%, ${config.surface_color || defaultConfig.surface_color} 50%, ${config.background_color || defaultConfig.background_color} 100%)`;
-    }
+    <script>
+        const grid = document.getElementById('numberGrid');
+        const modeToggle = document.getElementById('modeToggle');
+        const autoControls = document.getElementById('autoControls');
+        const modeStatus = document.getElementById('modeStatus');
+        const targetInput = document.getElementById('targetNum');
+        const gridRangeSelect = document.getElementById('gridRange');
+        
+        let isAuto = false;
+        let activeColor = '#ef4444';
+        let maxNumber = parseInt(gridRangeSelect.value);
 
-    if (window.elementSdk) {
-      window.elementSdk.init({
-        defaultConfig,
-        onConfigChange: async (config) => { applyConfig(config); },
-        mapToCapabilities: (config) => ({
-          recolorables: [
-            { get: () => config.background_color || defaultConfig.background_color, set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
-            { get: () => config.surface_color || defaultConfig.surface_color, set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
-            { get: () => config.text_color || defaultConfig.text_color, set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
-            { get: () => config.primary_action || defaultConfig.primary_action, set: (v) => { config.primary_action = v; window.elementSdk.setConfig({ primary_action: v }); } },
-            { get: () => config.secondary_action || defaultConfig.secondary_action, set: (v) => { config.secondary_action = v; window.elementSdk.setConfig({ secondary_action: v }); } }
-          ],
-          borderables: [],
-          fontEditable: {
-            get: () => config.font_family || defaultConfig.font_family,
-            set: (v) => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); }
-          },
-          fontSizeable: {
-            get: () => config.font_size || defaultConfig.font_size,
-            set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); }
-          }
-        }),
-        mapToEditPanelValues: (config) => new Map([
-          ['grid_title', config.grid_title || defaultConfig.grid_title]
-        ])
-      });
-    }
-  </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9de09d8411afef6c',t:'MTc3Mzc5ODkyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+        // --- GRID LOGIC ---
+        function buildGrid() {
+            grid.innerHTML = '';
+            for (let i = 1; i <= maxNumber; i++) {
+                const box = document.createElement('div');
+                box.className = 'number-box';
+                box.dataset.value = i;
+                box.innerHTML = `
+                    <div class="dots-container" id="box-${i}"></div>
+                    <span class="box-number">${i}</span>
+                `;
+                grid.appendChild(box);
+            }
+        }
+
+        // Auto Highlight
+        function checkMatches() {
+            document.querySelectorAll('.number-box').forEach(box => {
+                const dotCount = box.querySelector('.dots-container').children.length;
+                if (dotCount >= 2) {
+                    box.classList.add('match-highlight');
+                } else {
+                    box.classList.remove('match-highlight');
+                }
+            });
+        }
+
+        function toggleDot(num, color) {
+            const container = document.getElementById(`box-${num}`);
+            if (!container) return;
+            
+            const existing = container.querySelector(`[data-color="${color}"]`);
+            
+            if (existing) {
+                existing.remove();
+            } else {
+                if (container.children.length < 5) {
+                    const dot = document.createElement('div');
+                    dot.className = 'mini-dot';
+                    dot.style.backgroundColor = color;
+                    dot.dataset.color = color;
+                    container.appendChild(dot);
+                }
+            }
+        }
+
+        // Interaksi
+        grid.addEventListener('click', (e) => {
+            const box = e.target.closest('.number-box');
+            if (!box) return;
+            toggleDot(box.dataset.value, activeColor);
+            checkMatches();
+        });
+
+        gridRangeSelect.addEventListener('change', (e) => {
+            maxNumber = parseInt(e.target.value);
+            buildGrid();
+        });
+
+        modeToggle.addEventListener('change', () => {
+            isAuto = modeToggle.checked;
+            if (isAuto) {
+                autoControls.classList.remove('disabled-op');
+                modeStatus.textContent = 'Mode: Otomatis';
+                modeStatus.classList.replace('bg-blue-500/20', 'bg-green-500/20');
+                modeStatus.classList.replace('text-blue-400', 'text-green-400');
+                modeStatus.classList.replace('border-blue-500/30', 'border-green-500/30');
+            } else {
+                autoControls.classList.add('disabled-op');
+                modeStatus.textContent = 'Mode: Manual';
+                modeStatus.classList.replace('bg-green-500/20', 'bg-blue-500/20');
+                modeStatus.classList.replace('text-green-400', 'text-blue-400');
+                modeStatus.classList.replace('border-green-500/30', 'border-blue-500/30');
+            }
+        });
+
+        document.getElementById('btnK').addEventListener('click', () => {
+            const val = parseInt(targetInput.value);
+            if (!val || val < 1) return;
+            for (let i = val; i <= maxNumber; i += val) toggleDot(i, activeColor);
+            checkMatches();
+        });
+
+        document.getElementById('btnF').addEventListener('click', () => {
+            const val = parseInt(targetInput.value);
+            if (!val || val < 1) return;
+            for (let i = 1; i <= val; i++) {
+                if (val % i === 0 && i <= maxNumber) toggleDot(i, activeColor);
+            }
+            checkMatches();
+        });
+
+        document.querySelectorAll('.dot-button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelector('.dot-button.active').classList.remove('active');
+                btn.classList.add('active');
+                activeColor = btn.dataset.color;
+                document.documentElement.style.setProperty('--active-border', activeColor);
+            });
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            document.querySelectorAll('.dots-container').forEach(c => c.innerHTML = '');
+            checkMatches();
+        });
+
+        // --- MODAL LOGIC ---
+        const modal = document.getElementById('aturanModal');
+        const btnAturan = document.getElementById('btnAturan');
+        const closeModal = document.getElementById('closeModal');
+        const btnPaham = document.getElementById('btnPaham');
+
+        function openModal() {
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function hideModal() {
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        btnAturan.addEventListener('click', openModal);
+        closeModal.addEventListener('click', hideModal);
+        btnPaham.addEventListener('click', hideModal);
+        
+        modal.addEventListener('click', (e) => {
+            if(e.target === modal) hideModal();
+        });
+
+        // Initialize
+        buildGrid();
+    </script>
+</body>
 </html>
