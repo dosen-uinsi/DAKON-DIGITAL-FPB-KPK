@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="id" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Number Grid 100</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    html, body { height: 100%; margin: 0; }
+    * { font-family: 'Outfit', sans-serif; }
+
+    .color-dots-toolbar {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 16px;
+      padding: 12px;
+      background: rgba(15, 52, 96, 0.4);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      flex-wrap: wrap;
+      border: 2px solid rgba(100, 200, 255, 0.3);
+      box-shadow: 0 8px 32px rgba(100, 200, 255, 0.1);
+    }
+
+    .dot-button {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .dot-button:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 12px currentColor;
+    }
+
+    .dot-button.active {
+      border-color: #ffffff;
+      box-shadow: 0 0 16px currentColor;
+      transform: scale(1.2);
+    }
+
+    .reset-button {
+      padding: 8px 16px;
+      background: rgba(100, 200, 255, 0.3);
+      color: #64c8ff;
+      border: 2px solid rgba(100, 200, 255, 0.5);
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.2s ease;
+      margin-left: 12px;
+      border-left: 2px solid rgba(255, 255, 255, 0.3);
+      padding-left: 16px;
+    }
+
+    .reset-button:hover {
+      background: rgba(100, 200, 255, 0.5);
+      box-shadow: 0 0 12px rgba(100, 200, 255, 0.4);
+      transform: scale(1.05);
+    }
+
+    .reset-button:active {
+      transform: scale(0.95);
+    }
+
+    .number-box {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      border: 2px solid rgba(100, 200, 255, 0.2);
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 4px;
+      background-color: #1e2a4a;
+      color: #64c8ff;
+    }
+
+    .box-mini-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .box-number {
+      flex-basis: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .number-box:hover {
+      transform: scale(1.12) rotate(-2deg);
+      z-index: 10;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    }
+
+    .number-box:active {
+      transform: scale(0.95);
+    }
+
+    .number-box.clicked {
+      animation: pop 0.4s ease;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.25) rotate(5deg); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px) scale(0.9); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .grid-wrapper {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 8px;
+      max-width: 720px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 640px) {
+      .grid-wrapper {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 6px;
+      }
+    }
+
+    .app-bg {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #16213e 75%, #1a1a2e 100%);
+    }
+
+    .title-glow {
+      text-shadow: 0 0 30px rgba(100, 200, 255, 0.4), 0 0 15px rgba(150, 220, 255, 0.3);
+      color: #64c8ff;
+    }
+
+    .rules-buttons-container {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .rules-button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .fpb-button {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: #ffffff;
+    }
+
+    .fpb-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+    }
+
+    .kpk-button {
+      background: linear-gradient(135deg, #ec4899, #db2777);
+      color: #ffffff;
+    }
+
+    .kpk-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(236, 72, 153, 0.4);
+    }
+
+    .rules-button:active {
+      transform: translateY(0);
+    }
+
+    /* Modal styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      border: 2px solid rgba(100, 200, 255, 0.3);
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid rgba(100, 200, 255, 0.2);
+    }
+
+    .modal-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #64c8ff;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: #64c8ff;
+      font-size: 28px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      transform: rotate(90deg);
+      color: #ff1744;
+    }
+
+    .modal-body {
+      color: #bfdbfe;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .modal-image-placeholder {
+      width: 100%;
+      height: 300px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(100, 200, 255, 0.2));
+      border: 2px dashed rgba(100, 200, 255, 0.4);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 16px 0;
+      font-size: 48px;
+      color: rgba(100, 200, 255, 0.3);
+      text-align: center;
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js" type="text/javascript"></script>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full">
+  <div class="app-bg h-full w-full overflow-auto">
+   <div class="w-full max-w-4xl mx-auto px-4 py-8">
+    <header class="text-center mb-8">
+     <h1 id="gridTitle" class="text-3xl md:text-4xl font-extrabold text-white title-glow tracking-tight">Dakon Digital FPB &amp; KPK</h1>
+     <p id="subtitle" class="text-blue-300 mt-2 text-sm">MATHNOLOGY</p>
+    </header>
+    <div id="colorToolbar" class="color-dots-toolbar"><button class="dot-button active" data-color="#ff1744" style="background-color: #ff1744;" title="Bright Red"></button> <button class="dot-button" data-color="#00e676" style="background-color: #00e676;" title="Bright Green"></button> <button class="dot-button" data-color="#00bfff" style="background-color: #00bfff;" title="Bright Blue"></button> <button class="dot-button" data-color="#ffc400" style="background-color: #ffc400;" title="Bright Yellow"></button> <button class="dot-button" data-color="#d500f9" style="background-color: #d500f9;" title="Bright Purple"></button> <button id="resetButton" class="reset-button">Reset Semua</button>
+    </div>
+    <div class="rules-buttons-container"><button id="fpbRulesBtn" class="rules-button fpb-button">📋 Aturan FPB</button> <button id="kpkRulesBtn" class="rules-button kpk-button">📋 Aturan KPK</button>
+    </div>
+    <div id="numberGrid" class="grid-wrapper"></div>
+    <footer class="text-center mt-8 pb-4">
+     <p class="text-blue-400 text-xs">© 2026 All Rights Reserved</p>
+    </footer>
+   </div>
+  </div><!-- FPB Rules Modal -->
+  <div id="fpbModal" class="modal-overlay">
+   <div class="modal-content">
+    <div class="modal-header">
+     <h2 class="modal-title">📋 Aturan FPB</h2><button class="modal-close" onclick="closeFpbModal()">×</button>
+    </div>
+    <div class="modal-body">
+     <p><strong>FPB (Faktor Persekutuan Terbesar)</strong> adalah bilangan terbesar yang dapat membagi dua atau lebih bilangan tanpa sisa.</p>
+     <div class="modal-image-placeholder">
+      🖼️ Gambar Aturan FPB<br><span style="font-size: 14px;">Belum disiapkan</span>
+     </div>
+     <h3 style="color: #93c5fd; margin-top: 16px; font-weight: 600;">Cara Mencari FPB:</h3>
+     <ul style="margin-left: 16px; margin-top: 8px;">
+      <li>1. Cari semua faktor dari setiap bilangan</li>
+      <li>2. Temukan faktor yang sama</li>
+      <li>3. Pilih faktor terbesar</li>
+     </ul>
+     <p style="margin-top: 12px;"><strong>Contoh:</strong> FPB dari 12 dan 18</p>
+     <p style="margin-left: 16px; color: #d1d5db;">Faktor 12: 1, 2, 3, 4, 6, 12<br>
+      Faktor 18: 1, 2, 3, 6, 9, 18<br>
+      FPB = 6</p>
+    </div>
+   </div>
+  </div><!-- KPK Rules Modal -->
+  <div id="kpkModal" class="modal-overlay">
+   <div class="modal-content">
+    <div class="modal-header">
+     <h2 class="modal-title">📋 Aturan KPK</h2><button class="modal-close" onclick="closeKpkModal()">×</button>
+    </div>
+    <div class="modal-body">
+     <p><strong>KPK (Kelipatan Persekutuan Terkecil)</strong> adalah bilangan terkecil yang merupakan kelipatan dari dua atau lebih bilangan.</p>
+     <div class="modal-image-placeholder">
+      🖼️ Gambar Aturan KPK<br><span style="font-size: 14px;">Belum disiapkan</span>
+     </div>
+     <h3 style="color: #ec4899; margin-top: 16px; font-weight: 600;">Cara Mencari KPK:</h3>
+     <ul style="margin-left: 16px; margin-top: 8px;">
+      <li>1. Cari kelipatan dari setiap bilangan</li>
+      <li>2. Temukan kelipatan yang sama</li>
+      <li>3. Pilih kelipatan terkecil</li>
+     </ul>
+     <p style="margin-top: 12px;"><strong>Contoh:</strong> KPK dari 4 dan 6</p>
+     <p style="margin-left: 16px; color: #d1d5db;">Kelipatan 4: 4, 8, 12, 16, 20, 24, ...<br>
+      Kelipatan 6: 6, 12, 18, 24, 30, ...<br>
+      KPK = 12</p>
+    </div>
+   </div>
+  </div>
+  <script>
+    const dotColors = ['#ff1744', '#00e676', '#00bfff', '#ffc400', '#d500f9'];
+    let selectedColor = dotColors[0]; // Start with bright red
+
+    // Color palette for the boxes
+    const palette = [
+      ['#ef4444','#ffffff'], ['#f97316','#ffffff'], ['#eab308','#1a1a1a'],
+      ['#22c55e','#ffffff'], ['#06b6d4','#ffffff'], ['#3b82f6','#ffffff'],
+      ['#8b5cf6','#ffffff'], ['#ec4899','#ffffff'], ['#f43f5e','#ffffff'],
+      ['#14b8a6','#ffffff']
+    ];
+
+    function getColor(n) {
+      // All boxes have the same neutral color
+      return ['#1e293b', '#e2e8f0'];
+    }
+
+    function buildGrid() {
+      const grid = document.getElementById('numberGrid');
+      grid.innerHTML = '';
+      
+      for (let i = 1; i <= 100; i++) {
+        const [bg, fg] = getColor(i);
+        const box = document.createElement('div');
+        box.className = 'number-box';
+        box.style.backgroundColor = bg;
+        box.style.color = fg;
+        box.style.fontSize = 'clamp(0.75rem, 2.5vw, 1.25rem)';
+        box.style.animationDelay = `${(i - 1) * 15}ms`;
+        box.style.animation = `fadeInUp 0.4s ease ${(i - 1) * 15}ms both`;
+        
+        // Data structure to store dots in this box
+        box.dataset.dots = JSON.stringify([]);
+        box.dataset.boxNumber = i;
+        
+        const numberText = document.createElement('span');
+        numberText.className = 'box-number';
+        numberText.textContent = i;
+        box.appendChild(numberText);
+        
+        box.setAttribute('role', 'button');
+        box.setAttribute('aria-label', `Angka ${i}`);
+        box.tabIndex = 0;
+
+        box.addEventListener('click', () => {
+          const dots = JSON.parse(box.dataset.dots);
+          
+          // Add dot if less than 5, or remove if already exists
+          if (dots.includes(selectedColor)) {
+            // Remove this color
+            box.dataset.dots = JSON.stringify(dots.filter(d => d !== selectedColor));
+          } else if (dots.length < 5) {
+            // Add this color
+            dots.push(selectedColor);
+            box.dataset.dots = JSON.stringify(dots);
+          }
+          
+          updateBoxDisplay(box);
+        });
+
+        box.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            box.click();
+          }
+        });
+
+        grid.appendChild(box);
+      }
+    }
+
+    function updateBoxDisplay(box) {
+      const dots = JSON.parse(box.dataset.dots);
+      
+      // Remove old dots
+      const oldDots = box.querySelectorAll('.box-mini-dot');
+      oldDots.forEach(dot => dot.remove());
+      
+      // Add new dots
+      dots.forEach((color, idx) => {
+        const dot = document.createElement('div');
+        dot.className = 'box-mini-dot';
+        dot.style.backgroundColor = color;
+        
+        // Insert before the number if first dot, otherwise just add
+        if (idx === 0) {
+          const numberSpan = box.querySelector('.box-number');
+          box.insertBefore(dot, numberSpan);
+        } else {
+          box.insertBefore(dot, box.querySelector('.box-number'));
+        }
+      });
+    }
+
+    // Setup toolbar button listeners
+    const toolbar = document.getElementById('colorToolbar');
+    toolbar.querySelectorAll('.dot-button').forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove active class from all buttons
+        toolbar.querySelectorAll('.dot-button').forEach(b => b.classList.remove('active'));
+        // Add to clicked button
+        button.classList.add('active');
+        selectedColor = button.dataset.color;
+      });
+    });
+
+    // Reset button listener
+    document.getElementById('resetButton').addEventListener('click', () => {
+      document.querySelectorAll('.number-box').forEach(box => {
+        box.dataset.dots = JSON.stringify([]);
+        updateBoxDisplay(box);
+      });
+    });
+
+    // FPB and KPK modal functions
+    function openFpbModal() {
+      document.getElementById('fpbModal').classList.add('active');
+    }
+
+    function closeFpbModal() {
+      document.getElementById('fpbModal').classList.remove('active');
+    }
+
+    function openKpkModal() {
+      document.getElementById('kpkModal').classList.add('active');
+    }
+
+    function closeKpkModal() {
+      document.getElementById('kpkModal').classList.remove('active');
+    }
+
+    // Button event listeners
+    document.getElementById('fpbRulesBtn').addEventListener('click', openFpbModal);
+    document.getElementById('kpkRulesBtn').addEventListener('click', openKpkModal);
+
+    // Close modal when clicking outside
+    document.getElementById('fpbModal').addEventListener('click', (e) => {
+      if (e.target.id === 'fpbModal') closeFpbModal();
+    });
+
+    document.getElementById('kpkModal').addEventListener('click', (e) => {
+      if (e.target.id === 'kpkModal') closeKpkModal();
+    });
+
+    buildGrid();
+
+    // Element SDK
+    const defaultConfig = {
+      grid_title: 'Dakon Digital FPB & KPK',
+      background_color: '#1a1a2e',
+      surface_color: '#1e2a4a',
+      text_color: '#64c8ff',
+      primary_action: '#ff1744',
+      secondary_action: '#00e676',
+      font_family: 'Outfit',
+      font_size: 16
+    };
+
+    function applyConfig(config) {
+      const title = document.getElementById('gridTitle');
+      const subtitle = document.getElementById('subtitle');
+      const bg = document.querySelector('.app-bg');
+
+      const font = (config.font_family || defaultConfig.font_family) + ', sans-serif';
+      const baseSize = config.font_size || defaultConfig.font_size;
+
+      title.textContent = config.grid_title || defaultConfig.grid_title;
+      title.style.fontFamily = font;
+      title.style.fontSize = `${baseSize * 2}px`;
+      title.style.color = config.text_color || defaultConfig.text_color;
+
+      subtitle.style.fontFamily = font;
+      subtitle.style.fontSize = `${baseSize * 0.875}px`;
+      subtitle.style.color = config.secondary_action || defaultConfig.secondary_action;
+
+      bg.style.background = `linear-gradient(145deg, ${config.background_color || defaultConfig.background_color} 0%, ${config.surface_color || defaultConfig.surface_color} 50%, ${config.background_color || defaultConfig.background_color} 100%)`;
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => { applyConfig(config); },
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            { get: () => config.background_color || defaultConfig.background_color, set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
+            { get: () => config.surface_color || defaultConfig.surface_color, set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
+            { get: () => config.text_color || defaultConfig.text_color, set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
+            { get: () => config.primary_action || defaultConfig.primary_action, set: (v) => { config.primary_action = v; window.elementSdk.setConfig({ primary_action: v }); } },
+            { get: () => config.secondary_action || defaultConfig.secondary_action, set: (v) => { config.secondary_action = v; window.elementSdk.setConfig({ secondary_action: v }); } }
+          ],
+          borderables: [],
+          fontEditable: {
+            get: () => config.font_family || defaultConfig.font_family,
+            set: (v) => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); }
+          },
+          fontSizeable: {
+            get: () => config.font_size || defaultConfig.font_size,
+            set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); }
+          }
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ['grid_title', config.grid_title || defaultConfig.grid_title]
+        ])
+      });
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9de09d8411afef6c',t:'MTc3Mzc5ODkyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
