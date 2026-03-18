@@ -35,7 +35,7 @@
         }
         .number-box:hover { transform: scale(1.05); background: #2d3a4f; border-color: var(--active-border, #3b82f6); }
         
-        /* Box Number - Kalem */
+        /* Box Number */
         .box-number { 
             font-size: 1.1rem; 
             font-weight: 700; 
@@ -43,7 +43,7 @@
             transition: all 0.3s; 
         }
 
-        /* Highlight untuk KPK / FPB (Kotak yang punya >= 2 titik) */
+        /* Highlight untuk KPK / FPB */
         .match-highlight {
             border-color: #facc15 !important;
             box-shadow: 0 0 20px rgba(250, 204, 21, 0.6), inset 0 0 10px rgba(250, 204, 21, 0.2);
@@ -95,12 +95,12 @@
 
     <div class="max-w-5xl mx-auto px-4 py-8 relative flex-grow w-full">
         <header class="text-center mb-8 relative">
-            <h1 class="text-3xl md:text-5xl font-black tracking-tighter">
+            <h1 class="text-3xl md:text-5xl font-black tracking-tighter leading-tight">
                 <span class="text-white">DAKON</span> 
                 <span class="text-emerald-400">DIGITAL</span> 
-                <span class="text-blue-500">FPB & KPK</span>
+                <span class="block text-yellow-400 mt-1 md:mt-2 text-4xl md:text-6xl drop-shadow-md">FPB & KPK</span>
             </h1>
-            <p class="text-slate-400 text-lg font-bold tracking-widest mt-2 uppercase">
+            <p class="text-slate-400 text-lg font-bold tracking-widest mt-3 uppercase">
                 By <span class="text-blue-400">MATHNOLOGY</span>
             </p>
             
@@ -194,7 +194,7 @@
                     <div class="mt-5 p-4 bg-gradient-to-r from-blue-900/50 to-cyan-900/50 border-l-4 border-cyan-400 rounded-r-xl">
                         <strong class="text-cyan-300 text-base">💡 Hasil & Cara Membaca:</strong>
                         <ul class="list-disc list-inside mt-2 space-y-1 text-slate-200">
-                            <li>Kotak yang menyala Emas berarti kotak tersebut <strong>memuat kedua warna</strong> (Merah & Hijau). Ini disebut <em>Kelipatan Persekutuan</em>.</li>
+                            <li>Kotak yang menyala Emas berarti kotak tersebut <strong>memuat semua warna</strong> yang kamu pilih. Ini disebut <em>Kelipatan Persekutuan</em>.</li>
                             <li>Karena kita mencari yang <strong>Terkecil (KPK)</strong>, maka pilih kotak menyala Emas yang <strong class="text-cyan-400 text-lg">paling awal</strong>. (Jawaban: 12)</li>
                         </ul>
                     </div>
@@ -214,7 +214,7 @@
                     <div class="mt-5 p-4 bg-gradient-to-r from-purple-900/50 to-fuchsia-900/50 border-l-4 border-fuchsia-400 rounded-r-xl">
                         <strong class="text-fuchsia-300 text-base">💡 Hasil & Cara Membaca:</strong>
                         <ul class="list-disc list-inside mt-2 space-y-1 text-slate-200">
-                            <li>Kotak yang menyala Emas berarti kotak tersebut <strong>memuat kedua warna</strong> (Biru & Kuning). Ini disebut <em>Faktor Persekutuan</em>.</li>
+                            <li>Kotak yang menyala Emas berarti kotak tersebut <strong>memuat semua warna</strong> yang kamu pilih. Ini disebut <em>Faktor Persekutuan</em>.</li>
                             <li>Karena kita mencari yang <strong>Terbesar (FPB)</strong>, maka pilih kotak menyala Emas yang <strong class="text-fuchsia-400 text-lg">paling akhir</strong>. (Jawaban: 6)</li>
                         </ul>
                     </div>
@@ -254,11 +254,19 @@
             }
         }
 
-        // Auto Highlight
         function checkMatches() {
+            const allDots = document.querySelectorAll('.mini-dot');
+            const activeColorsOnBoard = new Set();
+            allDots.forEach(dot => activeColorsOnBoard.add(dot.dataset.color));
+            
+            const totalColors = activeColorsOnBoard.size;
+
             document.querySelectorAll('.number-box').forEach(box => {
-                const dotCount = box.querySelector('.dots-container').children.length;
-                if (dotCount >= 2) {
+                const dotsInBox = box.querySelectorAll('.mini-dot');
+                const colorsInBox = new Set();
+                dotsInBox.forEach(dot => colorsInBox.add(dot.dataset.color));
+
+                if (totalColors >= 2 && colorsInBox.size === totalColors) {
                     box.classList.add('match-highlight');
                 } else {
                     box.classList.remove('match-highlight');
@@ -285,7 +293,6 @@
             }
         }
 
-        // Interaksi
         grid.addEventListener('click', (e) => {
             const box = e.target.closest('.number-box');
             if (!box) return;
@@ -345,7 +352,6 @@
             checkMatches();
         });
 
-        // --- MODAL LOGIC ---
         const modal = document.getElementById('aturanModal');
         const btnAturan = document.getElementById('btnAturan');
         const closeModal = document.getElementById('closeModal');
@@ -369,7 +375,6 @@
             if(e.target === modal) hideModal();
         });
 
-        // Initialize
         buildGrid();
     </script>
 </body>
